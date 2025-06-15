@@ -11,8 +11,10 @@ import {
   CardTitle,
 } from "./card";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 const fetchRecipes = async () => {
+  console.log("fetching recipes");
   const res = await fetch(
     "https://www.themealdb.com/api/json/v1/1/search.php?s="
   );
