@@ -3,29 +3,38 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "./card";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
-const fetchRecipes = async () => {
-  console.log("fetching recipes");
-  const res = await fetch(
-    "https://www.themealdb.com/api/json/v1/1/search.php?s="
-  );
+const fetchRecipes = async ({
+  mealName,
+  category,
+}: {
+  mealName: string;
+  category: string;
+}) => {
+  const url = new URL("https://www.themealdb.com/api/json/v1/1/search.php");
+  url.searchParams.set("s", mealName);
+  url.searchParams.set("c", category);
+
+  const res = await fetch(url.toString());
   const data = await res.json();
   return data.meals;
 };
 
 export function RecipeCard() {
+  const searchParams = useSearchParams();
+  const mealName = searchParams.get("s") ?? "";
+  const category = searchParams.get("c") ?? "";
+
   const { data, error, isLoading } = useQuery({
-    queryKey: ["recipes"],
-    queryFn: fetchRecipes,
+    queryKey: ["recipes", mealName, category],
+    queryFn: () => fetchRecipes({ mealName, category }),
   });
 
   return (
